@@ -5,8 +5,10 @@ Plucking (deep) keys/paths safely from python collections has never been easier.
 __title__ = 'plucky'
 __version__ = '0.1'
 __author__ = 'Radomir Stevanovic'
-__license__ = 'MIT'
+__author_email__ = 'radomir.stevanovic@gmail.com'
 __copyright__ = 'Copyright 2014 Radomir Stevanovic'
+__license__ = 'MIT'
+__url__ = 'https://github.com/randomir/plucky'
 
 
 
