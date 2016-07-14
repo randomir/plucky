@@ -1,5 +1,44 @@
 def pluck(obj, selector, default=None):
-    """Safe itemgetter for structured objects."""
+    """Safe itemgetter for structured objects.
+    Happily operates on all (nested) objects that implement the item getter, 
+    i.e. the `[]` operator.
+
+    The `selector` is ~ ``(<key>|<index>|\*)(\.(<key>|<index>|\*))*``.
+    Parts (keys) in the selector path are separated with a dot. If the key
+    looks like a number it's interpreted as such, i.e. as an index (so beware
+    of numeric string keys in `dict`s).
+    A special key is `*`, representing the slice-all op `[:]`.
+
+    Examples:
+        obj = {
+            'users': [{
+                'uid': 1234,
+                'name': {
+                    'first': 'John',
+                    'last': 'Smith',
+                }
+            }, {
+                'uid': 2345,
+                'name': {
+                    'last': 'Bono'
+                }
+            }]
+        }
+
+        pluck(obj, 'users.1.name')
+            -> {'last': 'Bono'}
+
+        pluck(obj, 'users.*.name.last')
+            -> ['Smith', 'Bono']
+
+        pluck(obj, 'users.*.name.first')
+            -> ['John']
+
+
+    Note: since the dot `.` is used as a separator, keys can not contain dots.
+
+    TODO: Indexing with [], slices, escaped keys.
+    """
     
     def _filter(iterable, index):
         res = []
