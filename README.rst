@@ -44,3 +44,25 @@ Examples
 
     pluck(obj, 'users.*.name.first')
     # -> ['John']
+
+
+More Examples! :)
+-----------------
+
+.. code-block:: python
+
+    pluck([1,2,3], '2')
+    # -> 3
+
+    pluck([1,2,3], '-1')
+    # -> 3
+
+    pluck([1,2,3], '*')
+    # -> [1,2,3]
+
+    pluck([1, {'val': 2}, 3], '*.val')
+    # -> [2]
+
+    pluck([1, {'val': [1,2,3]}, 3], '1.val.-1')
+    # -> 3
+
