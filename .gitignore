@@ -1,0 +1,9 @@
+env/
+build/
+dist/
+plucky.egg-info/
+docs/_build
+MANIFEST
+*.pyc
+*.*~
+*.orig
