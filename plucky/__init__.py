@@ -1,3 +1,15 @@
+"""
+Plucking (deep) keys/paths safely from python collections has never been easier.
+"""
+
+__title__ = 'plucky'
+__version__ = '0.1'
+__author__ = 'Radomir Stevanovic'
+__license__ = 'MIT'
+__copyright__ = 'Copyright 2014 Radomir Stevanovic'
+
+
+
 def pluck(obj, selector, default=None):
     """Safe itemgetter for structured objects.
     Happily operates on all (nested) objects that implement the item getter, 
