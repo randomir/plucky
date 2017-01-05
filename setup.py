@@ -5,7 +5,7 @@ import plucky
 setup(
     name=plucky.__name__,
     version=plucky.__version__,
-    description=plucky.__doc__,
+    description=plucky.__doc__.strip(),
     long_description=open('README.rst').read(),
     author=plucky.__author__,
     author_email=plucky.__author_email__,
