@@ -11,6 +11,13 @@ __license__ = 'MIT'
 __url__ = 'https://github.com/randomir/plucky'
 
 
+# Python2/3 string detection workaround to
+# avoid dependance on `six` package.
+try:
+    basestring
+except:
+    basestring = str
+
 
 def pluck(obj, selector, default=None):
     """Safe itemgetter for structured objects.
