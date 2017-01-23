@@ -6,6 +6,14 @@ using a concise selector comprised of dictionary-like keys and list-like
 indices. Wildcards over list items are also supported.
 
 
+Installation
+------------
+
+``plucky`` is available as a Python package. Install with::
+
+    $ pip install plucky
+
+
 Usage
 -----
 
