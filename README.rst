@@ -9,7 +9,7 @@ indices. Slices over list items are also supported.
 Installation
 ------------
 
-``plucky`` is available as a Python package. Install with::
+``plucky`` is available as a **zero-dependency** Python package. Install with::
 
     $ pip install plucky
 
