@@ -11,6 +11,8 @@ __license__ = 'MIT'
 __url__ = 'https://github.com/randomir/plucky'
 
 
+import re
+
 # Python2/3 string detection workaround to
 # avoid dependance on `six` package.
 try:
@@ -24,11 +26,13 @@ def pluck(obj, selector, default=None):
     Happily operates on all (nested) objects that implement the item getter, 
     i.e. the `[]` operator.
 
-    The `selector` is ~ ``(<key>|<index>|\*)(\.(<key>|<index>|\*))*``.
+    The `selector` is ~
+    ``(<key>|<index>|<slice>|\*)(\.(<key>|<index>|<slice>|\*))*``.
     Parts (keys) in the selector path are separated with a dot. If the key
     looks like a number it's interpreted as such, i.e. as an index (so beware
     of numeric string keys in `dict`s).
-    A special key is `*`, representing the slice-all op `[:]`.
+    Python slice syntax is supported with keys like: ``2:7``, ``:5``, ``::-1``.
+    A special key is ``*``, equivalent to the slice-all op ``:``.
 
     Examples:
         obj = {
@@ -57,8 +61,6 @@ def pluck(obj, selector, default=None):
 
 
     Note: since the dot `.` is used as a separator, keys can not contain dots.
-
-    TODO: Indexing with [], slices, escaped keys.
     """
     
     def _filter(iterable, index):
@@ -69,16 +71,33 @@ def pluck(obj, selector, default=None):
             except:
                 pass
         return res
-    
+
+    def _int(val):
+        try:
+            return int(val)
+        except:
+            return None
+
+    def _parsekey(key):
+        m = re.match(r"^(?P<index>-?\d+)$", key)
+        if m:
+            return int(m.group('index'))
+
+        m = re.match(r"^(?P<start>-?\d+)?"\
+                     r"(:(?P<stop>-?\d+)?(:(?P<step>-?\d+)?)?)?$", key)
+        if m:
+            return slice(_int(m.group('start')),
+                         _int(m.group('stop')),
+                         _int(m.group('step')))
+
+        if key == '*':
+            return slice(None)
+
+        return key
+
     miss = False
     for key in selector.split('.'):
-        try:
-            index = int(key)
-        except:
-            if key == '*':
-                index = slice(None)
-            else:
-                index = key
+        index = _parsekey(key)
         
         if miss:
             if isinstance(index, basestring):

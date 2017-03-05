@@ -75,6 +75,30 @@ class TestPluck(unittest.TestCase):
     def test_person_6(self):
         self.assertEqual(pluck(self.users, "user.*.role.id"), [])
 
+    def test_slice_simplekey(self):
+        self.assertEqual(pluck([1, 2], "0"), 1)
+
+    def test_slice_simpleslice(self):
+        self.assertEqual(pluck([1, 2], "0:1"), [1])
+
+    def test_slice_range(self):
+        self.assertEqual(pluck(self.simple, "b.2:4"), self.simple['b'][2:4])
+
+    def test_slice_lastkey(self):
+        self.assertEqual(pluck(self.simple, "b.-1"), self.simple['b'][-1])
+
+    def test_slice_lastslice(self):
+        self.assertEqual(pluck(self.simple, "b.-1:"), self.simple['b'][-1:])
+
+    def test_slice_reverserange(self):
+        self.assertEqual(pluck(self.simple, "b.-2:-4:-1"), self.simple['b'][-2:-4:-1])
+
+    def test_slice_reverse(self):
+        self.assertEqual(pluck(self.simple, "b.::-1"), self.simple['b'][::-1])
+
+    def test_slice_deep_reverse(self):
+        self.assertEqual(pluck(self.users, "user.::-1.role"), ["d", "b"])
+
 
 if __name__ == '__main__':
     unittest.main()
