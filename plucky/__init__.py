@@ -12,6 +12,10 @@ __url__ = 'https://github.com/randomir/plucky'
 
 
 import re
+import operator
+from copy import deepcopy
+from itertools import chain
+
 
 # Python2/3 string detection workaround to
 # avoid dependance on `six` package.
@@ -121,3 +125,40 @@ def pluck(obj, selector, default=None):
         return default
     else:
         return obj
+
+
+def merge(a, b, op=None):
+    """Immutable merge ``a`` structure with ``b`` using binary operator ``op``
+    on leaf nodes.
+    Merged structure is returned.
+    """
+
+    if op is None:
+        op = operator.add
+
+    if isinstance(a, dict) and isinstance(b, dict):
+        result = {}
+        for key in set(chain(a.keys(), b.keys())):
+            if key in a and key in b:
+                result[key] = merge(a[key], b[key], op)
+            elif key in a:
+                result[key] = deepcopy(a[key])
+            elif key in b:
+                result[key] = deepcopy(b[key])
+        return result
+
+    elif isinstance(a, list) and isinstance(b, list):
+        if len(a) == len(b):
+            # merge subelements
+            result = []
+            for idx in range(len(a)):
+                result.append(merge(a[idx], b[idx], op))
+            return result
+        else:
+            # merge lists
+            return op(a, b)
+
+    # all other merge ops should be handled by ``op``.
+    # default ``operator.add`` will handle addition of numeric types, but fail
+    # with TypeError for incompatible types (eg. str + None, etc.)
+    return op(a, b)
