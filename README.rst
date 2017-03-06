@@ -5,6 +5,9 @@ plucky: concise deep obj.get()
 using a concise selector comprised of dictionary-like keys and list-like 
 indices. Slices over list items are also supported.
 
+``plucky.merge`` facilitates recursive merging of two data structures, reducing
+leaf values with the provided binary operator.
+
 
 Installation
 ------------
@@ -19,9 +22,11 @@ Usage
 
 .. code-block:: python
 
-    from plucky import pluck
+    from plucky import pluck, merge
 
     pluck(obj, 'selector.*.path.2')
+
+    merge({"x": 1, "y": 0}, {"x": 2})
 
 
 Examples
@@ -79,3 +84,9 @@ More Examples! :)
 
     pluck([1, {'val': [1,2,3]}, 3], '1.val.-1')
     # -> 3
+
+    merge({"x": 1, "y": 0}, {"x": 2})
+    # -> {"x": 3, "y": 0}
+
+    merge({"a": [1, 2], "b": [1, 2]}, {"a": [3, 4], "b": [3]})
+    # -> {"a": [4, 6], "b": [1, 2, 3]}

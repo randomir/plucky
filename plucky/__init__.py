@@ -10,6 +10,8 @@ __copyright__ = 'Copyright 2014 Radomir Stevanovic'
 __license__ = 'MIT'
 __url__ = 'https://github.com/randomir/plucky'
 
+__all__ = ["pluck", "merge"]
+
 
 import re
 import operator
