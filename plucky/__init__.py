@@ -3,7 +3,7 @@ Plucking (deep) keys/paths safely from python collections has never been easier.
 """
 
 __title__ = 'plucky'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 __author__ = 'Radomir Stevanovic'
 __author_email__ = 'radomir.stevanovic@gmail.com'
 __copyright__ = 'Copyright 2014 Radomir Stevanovic'
