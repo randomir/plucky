@@ -129,10 +129,19 @@ def pluck(obj, selector, default=None):
         return obj
 
 
-def merge(a, b, op=None):
+def merge(a, b, op=None, recurse_list=True):
     """Immutable merge ``a`` structure with ``b`` using binary operator ``op``
-    on leaf nodes.
-    Merged structure is returned.
+    on leaf nodes. Merged structure is returned, input lists are not modified.
+
+    If ``recurse_list=True`` (default), leaf lists of equal length will be
+    merged on a list-element level. If ``recurse_list=False``, all lists are
+    merged with user-provided ``op``.
+    Note the difference::
+
+        merge([1, 2], [3, 4]) ==> [4, 6]
+
+        merge([1, 2], [3, 4], recurse_list=False) ==> [1, 2, 3, 4]
+
     """
 
     if op is None:
@@ -150,7 +159,7 @@ def merge(a, b, op=None):
         return result
 
     elif isinstance(a, list) and isinstance(b, list):
-        if len(a) == len(b):
+        if recurse_list and len(a) == len(b):
             # merge subelements
             result = []
             for idx in range(len(a)):
