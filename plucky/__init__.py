@@ -151,7 +151,7 @@ def merge(a, b, op=None, recurse_list=True):
         result = {}
         for key in set(chain(a.keys(), b.keys())):
             if key in a and key in b:
-                result[key] = merge(a[key], b[key], op)
+                result[key] = merge(a[key], b[key], op, recurse_list)
             elif key in a:
                 result[key] = deepcopy(a[key])
             elif key in b:
@@ -163,7 +163,7 @@ def merge(a, b, op=None, recurse_list=True):
             # merge subelements
             result = []
             for idx in range(len(a)):
-                result.append(merge(a[idx], b[idx], op))
+                result.append(merge(a[idx], b[idx], op, recurse_list))
             return result
         else:
             # merge lists

@@ -42,6 +42,9 @@ class TestMerge(unittest.TestCase):
     def test_lists_of_equal_len_no_recurse(self):
         self.assertEqual(merge([1, 2], [3, 4], recurse_list=False), [1, 2, 3, 4])
 
+    def test_lists_no_recurse_in_dict(self):
+        self.assertEqual(merge({'x': [1]}, {'x': [2]}, recurse_list=False), {'x': [1, 2]})
+
     def test_lists_of_inequal_len(self):
         self.assertEqual(merge([1, 2], [3]), [1, 2, 3])
 
