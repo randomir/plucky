@@ -36,17 +36,17 @@ class TestMerge(unittest.TestCase):
     def test_dict_with_numeric_values(self):
         self.assertEqual(merge({"a": 1.2}, {"a": 2.3}), {"a": 3.5})
 
-    def test_lists_of_equal_len(self):
-        self.assertEqual(merge([1, 2], [3, 4]), [4, 6])
+    def test_lists_of_equal_len_recurse(self):
+        self.assertEqual(merge([1, 2], [3, 4], recurse_list=True), [4, 6])
+
+    def test_lists_of_inequal_len_recurse(self):
+        self.assertEqual(merge([1, 2], [3], recurse_list=True), [1, 2, 3])
 
     def test_lists_of_equal_len_no_recurse(self):
-        self.assertEqual(merge([1, 2], [3, 4], recurse_list=False), [1, 2, 3, 4])
+        self.assertEqual(merge([1, 2], [3, 4]), [1, 2, 3, 4])
 
     def test_lists_no_recurse_in_dict(self):
-        self.assertEqual(merge({'x': [1]}, {'x': [2]}, recurse_list=False), {'x': [1, 2]})
-
-    def test_lists_of_inequal_len(self):
-        self.assertEqual(merge([1, 2], [3]), [1, 2, 3])
+        self.assertEqual(merge({'x': [1]}, {'x': [2]}), {'x': [1, 2]})
 
 
 if __name__ == '__main__':
