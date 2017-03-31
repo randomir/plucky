@@ -7,16 +7,25 @@ like::
     pluckable(obj)[::-1].meta["is-admin"][0]
 
 """
+from __future__ import absolute_import
+
+import sys
+
+from .compat import xrange, baseinteger
 
 
 class pluckable(object):
-    def __init__(self, obj, default=None):
+    def __init__(self, obj=None, default=None, empty=False):
         self.obj = obj
         self.default = default
+        self.empty = empty
     
     @property
     def value(self):
-        return self.obj
+        if self.empty:
+            return self.default
+        else:
+            return self.obj
     
     def _filtered_list(self, selector):
         """Iterate over `self.obj` list, extracting `selector` from each
@@ -30,16 +39,44 @@ class pluckable(object):
             except:
                 pass
         return res
+
+    def _extract_from_list(self, selector):
+        try:
+            if isinstance(selector, baseinteger):
+                return [self.obj[selector]]
+            elif isinstance(selector, slice):
+                return self.obj[selector]
+            else:
+                return self._filtered_list(selector)
+        except:
+            return []
     
-    def _get(self, name):
-        if isinstance(self.obj, list):
-            obj = self._filtered_list(name)
+    def _extract_from_dict(self, selector):
+        """Extracts all values from `self.obj` dict addressed with a `selector`.
+        Selector can be a ``slice``, or a singular value extractor in form of a
+        valid dictionary key (hashable object).
+        
+        If `selector` is a singular value extractor (like a string, integer,
+        etc), a single value (for a given key) is returned if key exists, an
+        empty list if not.
+        
+        If `selector` is a ``slice``, each key from that range is extracted;
+        failing-back, again, to an empty list.
+        """
+        if isinstance(selector, slice):
+            keys = xrange(selector.start or 0,
+                          selector.stop or sys.maxint,
+                          selector.step or 1)
         else:
+            keys = [selector]
+        
+        res = []
+        for key in keys:
             try:
-                obj = self.obj[name]
+                res.append(self.obj[key])
             except:
-                obj = self.default
-        return pluckable(obj, self.default)
+                pass
+        return res
     
     def __getattr__(self, name):
         """Handle ``obj.name`` lookups.
@@ -49,10 +86,43 @@ class pluckable(object):
                        iterate over all elements, extracting "key" from each
                        element
         """
-        return self._get(name)
+        return self._get_all(name)
     
+    def _get_all(self, *selectors):
+        res = []
+        for selector in selectors:
+            if isinstance(self.obj, list):
+                res.extend(self._extract_from_list(selector))
+            else:
+                res.extend(self._extract_from_dict(selector))
+        
+        if len(res) == 0:
+            return pluckable(empty=True, default=self.default)
+        elif len(res) == 1 and not isinstance(self.obj, list):
+            return pluckable(res[0], self.default)
+        else:
+            return pluckable(res, self.default)
+    
+    def __getitem__(self, key):
+        """Handle various ``obj[key]`` lookups, including::
+        
+            obj[2]      -> if obj is list, extract elem with index 2; if obj is dict, extract value under key 2
+            obj[1, 2]   -> if obj is list, extract elems with indices 1 and 2; if obj is dict, extract values under keys 1,2 into a new list
+            obj[1:5]    -> the same as obj[1,2,3,4,5]
+            obj["key"]  -> if obj is dict, extract value under key "key" (or default val), if obj is list, iterate over all elements, extracting "key" from each element
+            obj[2, 4:5] -> the same as obj[2,4,5]
+            obj[1:, 0]  -> analog to the above, sugar syntax for: obj[1:] + [obj[0]]
+            obj["x", "y"]  -> if obj is dict, extract keys "x" and "y" into a new list; if obj is list, iterate over all elements, extracting "x" and "y" from each element into a flat list
+            obj["x", "y", 3, ::-1]
+            obj[3, ...]
+        """
+        if isinstance(key, tuple):
+            return self._get_all(*key)
+        else:
+            return self._get_all(key)
+
     def __str__(self):
-        return str(self.obj)
+        return str(self.value)
 
     def __repr__(self):
-        return repr(self.obj)
+        return repr(self.value)

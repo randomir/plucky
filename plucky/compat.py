@@ -8,6 +8,15 @@ try:
 except:
     basestring = str
 
+# for simpler integer detection
+try:
+    baseinteger = (int, long)
+except:
+    baseinteger = (int, )
+
+# for simpler detection of valid index values
+baseindex = baseinteger + (slice, )
+
 # xrange for python3
 try:
     xrange = xrange
