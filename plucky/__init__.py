@@ -17,15 +17,9 @@ import re
 import operator
 from copy import deepcopy
 from itertools import chain
+
+from compat import basestring
 from structural import pluckable
-
-
-# Python2/3 string detection workaround to
-# avoid dependance on `six` package.
-try:
-    basestring
-except:
-    basestring = str
 
 
 def pluck(obj, selector, default=None):
