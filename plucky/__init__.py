@@ -17,6 +17,7 @@ import re
 import operator
 from copy import deepcopy
 from itertools import chain
+from structural import pluckable
 
 
 # Python2/3 string detection workaround to
