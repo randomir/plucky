@@ -1,6 +1,7 @@
 """
 Plucking (deep) keys/paths safely from python collections has never been easier.
 """
+from __future__ import absolute_import
 
 __title__ = 'plucky'
 __version__ = '0.3.3'
@@ -18,8 +19,8 @@ import operator
 from copy import deepcopy
 from itertools import chain
 
-from compat import basestring
-from structural import pluckable
+from .compat import basestring
+from .structural import pluckable
 
 
 def pluck(obj, selector, default=None):
