@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 from setuptools import setup
-import plucky
 
 setup(
-    name=plucky.__name__,
-    version=plucky.__version__,
-    description=plucky.__doc__.strip(),
+    name='plucky',
+    version='0.3.3',
+    description='Plucking (deep) keys/paths safely from python collections has never been easier.',
     long_description=open('README.rst').read(),
-    author=plucky.__author__,
-    author_email=plucky.__author_email__,
-    url=plucky.__url__,
-    license=plucky.__license__,
-    packages=[plucky.__name__],
-    package_dir={plucky.__name__: plucky.__name__},
+    author='Radomir Stevanovic',
+    author_email='radomir.stevanovic@gmail.com',
+    url='https://github.com/randomir/plucky',
+    license='MIT',
+    packages=['plucky'],
+    package_dir={'plucky': 'plucky'},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

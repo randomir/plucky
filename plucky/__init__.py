@@ -3,17 +3,6 @@ Plucking (deep) keys/paths safely from python collections has never been easier.
 """
 from __future__ import absolute_import
 
-__title__ = 'plucky'
-__version__ = '0.3.3'
-__author__ = 'Radomir Stevanovic'
-__author_email__ = 'radomir.stevanovic@gmail.com'
-__copyright__ = 'Copyright 2014 Radomir Stevanovic'
-__license__ = 'MIT'
-__url__ = 'https://github.com/randomir/plucky'
-
-__all__ = ["pluck", "merge"]
-
-
 import re
 import operator
 from copy import deepcopy
@@ -21,6 +10,8 @@ from itertools import chain
 
 from .compat import basestring
 from .structural import pluckable
+
+__all__ = ["pluck", "merge"]
 
 
 def pluck(obj, selector, default=None):
