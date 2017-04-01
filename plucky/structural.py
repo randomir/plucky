@@ -78,6 +78,25 @@ class pluckable(object):
                 pass
         return res
     
+    def _get_all(self, *selectors):
+        res = []
+        for selector in selectors:
+            if isinstance(self.obj, list):
+                res.extend(self._extract_from_list(selector))
+            else:
+                res.extend(self._extract_from_dict(selector))
+        
+        singular_selector = \
+            not isinstance(self.obj, list) or \
+            len(selectors) == 1 and isinstance(selectors[0], baseinteger)
+        
+        if len(res) == 0:
+            return pluckable(empty=True, default=self.default)
+        elif len(res) == 1 and singular_selector:
+            return pluckable(res[0], self.default)
+        else:
+            return pluckable(res, self.default)
+    
     def __getattr__(self, name):
         """Handle ``obj.name`` lookups.
         
@@ -87,21 +106,6 @@ class pluckable(object):
                        element
         """
         return self._get_all(name)
-    
-    def _get_all(self, *selectors):
-        res = []
-        for selector in selectors:
-            if isinstance(self.obj, list):
-                res.extend(self._extract_from_list(selector))
-            else:
-                res.extend(self._extract_from_dict(selector))
-        
-        if len(res) == 0:
-            return pluckable(empty=True, default=self.default)
-        elif len(res) == 1 and not isinstance(self.obj, list):
-            return pluckable(res[0], self.default)
-        else:
-            return pluckable(res, self.default)
     
     def __getitem__(self, key):
         """Handle various ``obj[key]`` lookups, including::
