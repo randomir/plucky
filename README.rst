@@ -1,6 +1,19 @@
 plucky: concise deep obj.get()
 ==============================
 
+.. image:: https://img.shields.io/pypi/v/plucky.svg
+    :target: https://pypi.python.org/pypi/plucky
+
+.. image:: https://img.shields.io/pypi/l/plucky.svg
+    :target: https://pypi.python.org/pypi/plucky
+
+.. image:: https://img.shields.io/pypi/wheel/plucky.svg
+    :target: https://pypi.python.org/pypi/plucky
+
+.. image:: https://img.shields.io/pypi/pyversions/plucky.svg
+    :target: https://pypi.python.org/pypi/plucky
+
+
 ``plucky.pluck`` enables you to safely extract several-levels deep values by 
 using a concise selector comprised of dictionary-like keys and list-like 
 indices. Slices over list items are also supported.
