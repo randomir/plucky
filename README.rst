@@ -5,6 +5,11 @@ plucky: concise deep obj.get()
 using a concise selector comprised of dictionary-like keys and list-like 
 indices. Slices over list items are also supported.
 
+``plucky.pluckable`` will happily wrap dictionary- or list-like objects and allow
+for chained soft plucking with attribute and item getters (e.g. ``.attr``,
+``["key"]``, ``[idx]``, ``[a:b]``, or a combination: ``["key1", "key2"]``,
+and ``[0, 3:7, ::-1]``)
+
 ``plucky.merge`` facilitates recursive merging of two data structures, reducing
 leaf values with the provided binary operator.
 
@@ -22,11 +27,13 @@ Usage
 
 .. code-block:: python
 
-    from plucky import pluck, merge
+    from plucky import pluck, merge, pluckable
 
     pluck(obj, 'selector.*.path.2')
 
     merge({"x": 1, "y": 0}, {"x": 2})
+    
+    pluckable(obj).users[2:5, 10:15].name["first", "middle"]
 
 
 Examples
@@ -90,3 +97,12 @@ More Examples! :)
 
     merge({"a": [1, 2], "b": [1, 2]}, {"a": [3, 4], "b": [3]})
     # -> {"a": [4, 6], "b": [1, 2, 3]}
+
+    pluckable(obj).users.name.last.value
+    # -> ['Smith', 'Bono']
+
+    pluckable(obj).users[:, ::-1].name.last.value
+    # -> ['Smith', 'Bono', 'Bono', 'Smith']
+    
+    pluckable(obj).users[:, ::-1].name.last[0, -1].value
+    # -> ['Smith', 'Smith']
