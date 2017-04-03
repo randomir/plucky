@@ -15,14 +15,15 @@ from .compat import xrange, baseinteger
 
 
 class pluckable(object):
-    def __init__(self, obj=None, default=None, empty=False):
+    def __init__(self, obj=None, default=None, skipmissing=True, _empty=False):
         self.obj = obj
         self.default = default
-        self.empty = empty
+        self._empty = _empty
+        self.skipmissing = skipmissing
     
     @property
     def value(self):
-        if self.empty:
+        if self._empty:
             return self.default
         else:
             return self.obj
@@ -37,7 +38,8 @@ class pluckable(object):
             try:
                 res.append(elem[selector])
             except:
-                pass
+                if not self.skipmissing:
+                    res.append(self.default)
         return res
 
     def _extract_from_list(self, selector):
@@ -49,7 +51,10 @@ class pluckable(object):
             else:
                 return self._filtered_list(selector)
         except:
-            return []
+            if self.skipmissing:
+                return []
+            else:
+                return [self.default]
     
     def _extract_from_dict(self, selector):
         """Extracts all values from `self.obj` dict addressed with a `selector`.
@@ -75,7 +80,8 @@ class pluckable(object):
             try:
                 res.append(self.obj[key])
             except:
-                pass
+                if not self.skipmissing:
+                    res.append(self.default)
         return res
     
     def _get_all(self, *selectors):
@@ -91,11 +97,14 @@ class pluckable(object):
             len(selectors) == 1 and isinstance(selectors[0], baseinteger)
         
         if len(res) == 0:
-            return pluckable(empty=True, default=self.default)
+            return pluckable(_empty=True, default=self.default,
+                             skipmissing=self.skipmissing)
         elif len(res) == 1 and singular_selector:
-            return pluckable(res[0], self.default)
+            return pluckable(res[0], self.default,
+                             skipmissing=self.skipmissing)
         else:
-            return pluckable(res, self.default)
+            return pluckable(res, self.default,
+                             skipmissing=self.skipmissing)
     
     def __getattr__(self, name):
         """Handle ``obj.name`` lookups.
