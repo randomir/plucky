@@ -16,6 +16,19 @@ from .compat import xrange, baseinteger
 
 class pluckable(object):
     def __init__(self, obj=None, default=None, skipmissing=True, _empty=False):
+        """Creates a new pluckable object based on `obj`. Default value for
+        the missing keys is given with `default`.
+
+        A two modes of plucking are supported::
+
+        (1) the default, document databases alike, where missing keys (and it's
+            ancestors) will be silently dropped-out -- except for the leaf nodes --
+            which always default to the ``default`` when missing.
+
+        (2) one-on-one extractor, which will include all missing values as
+        ``default``, ensuring the leaf values exist even when one (or more)
+        intermediate nodes are missing.
+        """
         self.obj = obj
         self.default = default
         self._empty = _empty
@@ -127,7 +140,6 @@ class pluckable(object):
             obj[1:, 0]  -> analog to the above, sugar syntax for: obj[1:] + [obj[0]]
             obj["x", "y"]  -> if obj is dict, extract keys "x" and "y" into a new list; if obj is list, iterate over all elements, extracting "x" and "y" from each element into a flat list
             obj["x", "y", 3, ::-1]
-            obj[3, ...]
         """
         if isinstance(key, tuple):
             return self._get_all(*key)
