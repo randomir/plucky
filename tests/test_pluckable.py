@@ -10,7 +10,7 @@ from plucky import pluckable
 
 class TestPluckable(unittest.TestCase):
     def setUp(self):
-        self.obj = pluckable({
+        self.src = {
             "a": 1,
             "b": range(10),
             "c": {
@@ -37,10 +37,14 @@ class TestPluckable(unittest.TestCase):
                 "name": {
                     "last": "bonobo"
                 }
+            }, {
+                "uid": 3
             }],
             1: "one",
             2: "two"
-        })
+        }
+        self.obj = pluckable(self.src)
+        self.obj2 = pluckable(self.src, skipmissing=False)
         
     def test_simple_getattr(self):
         self.assertEqual(self.obj.a.value, 1)
@@ -52,7 +56,7 @@ class TestPluckable(unittest.TestCase):
         self.assertEqual(self.obj.c.I.b.value, 2)
 
     def test_getattr_on_list(self):
-        self.assertEqual(self.obj.users.uid.value, [1, 2])
+        self.assertEqual(self.obj.users.uid.value, [1, 2, 3])
 
     def test_getattr_on_list_dict(self):
         self.assertEqual(self.obj.users.name.first.value, ["john"])
@@ -118,6 +122,29 @@ class TestPluckable(unittest.TestCase):
 
     def test_getitem_str_int_from_dict_deep(self):
         self.assertEqual(self.obj["a", 1].value, [1, "one"])
+
+    def test_skipmissing_list_indices(self):
+        self.assertEqual(pluckable([1, 2], skipmissing=False)[0, 2].value, [1, None])
+
+    def test_skipmissing_list_slice(self):
+        self.assertEqual(pluckable([1, 2], skipmissing=False)[0:5].value, [1, 2])
+
+    def test_skipmissing_dict_keys(self):
+        D = {"x": 1}
+        self.assertEqual(pluckable(D, skipmissing=False)["x", "y"].value, [1, None])
+
+    def test_skipmissing_dict_keys2(self):
+        D = {"x": 1}
+        self.assertEqual(pluckable(D, skipmissing=False)["x", "y"].invalid.value, [None, None])
+
+    def test_skipmissing_dict_deep(self):
+        self.assertEqual(self.obj2.c.I["a", "x", "b"].value, [1, None, 2])
+
+    def test_skipmissing_dict_deep2(self):
+        self.assertEqual(self.obj2.users.name.last.value, ["smith", "bonobo", None])
+
+    def test_skipmissing_dict_deep3(self):
+        self.assertEqual(self.obj2.users.name.last.missing.value, [None, None, None])
 
 
 if __name__ == '__main__':

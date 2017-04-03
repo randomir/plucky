@@ -31,8 +31,8 @@ class pluckable(object):
         """
         self.obj = obj
         self.default = default
-        self._empty = _empty
         self.skipmissing = skipmissing
+        self._empty = _empty
     
     @property
     def value(self):
