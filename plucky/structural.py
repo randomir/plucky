@@ -132,14 +132,19 @@ class pluckable(object):
     def __getitem__(self, key):
         """Handle various ``obj[key]`` lookups, including::
         
-            obj[2]      -> if obj is list, extract elem with index 2; if obj is dict, extract value under key 2
-            obj[1, 2]   -> if obj is list, extract elems with indices 1 and 2; if obj is dict, extract values under keys 1,2 into a new list
+            obj[2]      -> if obj is list, extract elem with index 2;
+                           if obj is dict, extract value under key 2
+            obj[1, 2]   -> if obj is list, extract elems with indices 1 and 2;
+                           if obj is dict, extract values under keys 1,2 into a new list
             obj[1:5]    -> the same as obj[1,2,3,4,5]
-            obj["key"]  -> if obj is dict, extract value under key "key" (or default val), if obj is list, iterate over all elements, extracting "key" from each element
+            obj["key"]  -> if obj is dict, extract value under key "key" (or default val),
+                           if obj is list, iterate over all elements, extracting "key" from each element
             obj[2, 4:5] -> the same as obj[2,4,5]
             obj[1:, 0]  -> analog to the above, sugar syntax for: obj[1:] + [obj[0]]
-            obj["x", "y"]  -> if obj is dict, extract keys "x" and "y" into a new list; if obj is list, iterate over all elements, extracting "x" and "y" from each element into a flat list
-            obj["x", "y", 3, ::-1]
+            obj["x", "y"]  -> if obj is dict, extract keys "x" and "y" into a new list;
+                              if obj is list, iterate over all elements, extracting "x" and "y"
+                              from each element into a flat list
+            obj["x", "y", 3, ::-1] -> similar to above, extracting "x", "y", 3 and all keys in reverse
         """
         if isinstance(key, tuple):
             return self._get_all(*key)
