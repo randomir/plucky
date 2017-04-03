@@ -69,6 +69,8 @@ Examples
             'name': {
                 'last': 'Bono'
             }
+        }, {
+            'uid': 3456
         }]
     }
 
@@ -80,6 +82,15 @@ Examples
 
     pluck(obj, 'users.*.name.first')
     # -> ['John']
+
+    pluckable(obj).users.name.first.value
+    # -> ['John']
+
+    pluckable(obj).users.uid.value[0, 2, 1]
+    # -> [1234, 3456, 2345]
+
+    pluckable(obj, skipmissing=False, default='Unnamed').users.name.first.value
+    # -> ['John', 'Unnamed', 'Unnamed']
 
 
 More Examples! :)
