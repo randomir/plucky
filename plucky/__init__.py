@@ -25,7 +25,9 @@ def pluck(obj, selector, default=None):
     looks like a number it's interpreted as such, i.e. as an index (so beware
     of numeric string keys in `dict`s).
     Python slice syntax is supported with keys like: ``2:7``, ``:5``, ``::-1``.
-    A special key is ``*``, equivalent to the slice-all op ``:``.
+    A special key is ``*``, equivalent to the slice-all op ``:``. Note its
+    usage does not serve functional, but annotational purpose -- feel free to
+    leave it out (check the last example below).
 
     Examples:
         obj = {
@@ -49,7 +51,7 @@ def pluck(obj, selector, default=None):
         pluck(obj, 'users.*.name.last')
             -> ['Smith', 'Bono']
 
-        pluck(obj, 'users.*.name.first')
+        pluck(obj, 'users.name.first')
             -> ['John']
 
 

@@ -38,40 +38,55 @@ class TestPluck(unittest.TestCase):
                 "role": "d"
             }]
         }
-    
+
     def test_1(self):
         self.assertEqual(pluck(self.simple, "a"), 1)
-    
+
     def test_2(self):
         self.assertEqual(pluck(self.simple, "b.3"), 3)
-    
+
+    def test_2_wildcard(self):
+        self.assertEqual(pluck(self.simple, "b.*"), range(10))
+
+    def test_2_simple(self):
+        self.assertEqual(pluck(self.simple, "b"), range(10))
+
+    def test_2_slice(self):
+        self.assertEqual(pluck(self.simple, "b.:"), range(10))
+
     def test_3(self):
         self.assertEqual(pluck(self.simple, "c.I"), {"a": 1, "b": 2})
-    
+
     def test_4(self):
         self.assertEqual(pluck(self.simple, "c.II.1.x"), "x2")
-    
+
     def test_5(self):
         self.assertEqual(pluck(self.simple, "c.II.*.x"), ["x1", "x2"])
-    
+
     def test_6(self):
         self.assertEqual(pluck(self.simple, "c.II.*.z"), [])
-    
+
     def test_person_1(self):
+        self.assertEqual(pluck(self.users, "user.role"), ["b", "d"])
+
+    def test_person_1_wildcard(self):
         self.assertEqual(pluck(self.users, "user.*.role"), ["b", "d"])
-    
+
     def test_person_2(self):
+        self.assertEqual(pluck(self.users, "user.name"), ["a", "c"])
+
+    def test_person_2_wildcard(self):
         self.assertEqual(pluck(self.users, "user.*.name"), ["a", "c"])
-    
+
     def test_person_3(self):
         self.assertEqual(pluck(self.users, "user.*.username"), [])
-    
+
     def test_person_4(self):
         self.assertEqual(pluck(self.users, "user.5"), None)
-    
+
     def test_person_5(self):
         self.assertEqual(pluck(self.users, "user.5.x"), None)
-    
+
     def test_person_6(self):
         self.assertEqual(pluck(self.users, "user.*.role.id"), [])
 
