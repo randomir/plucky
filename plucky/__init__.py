@@ -116,6 +116,29 @@ def pluck(obj, selector, default=None):
         return obj
 
 
+def pluck2(obj, selector, default=None, skipmissing=True):
+    """Alternative implementation of `pluck` that accepts more complex
+    selectors. It's a wrapper around `pluckable`, so a `selector` can be any
+    valid Python expression comprising attribute getters (``.attr``) and item
+    getters (``[1, 4:8, "key"]``).
+
+    Example:
+
+        pluck2(obj, "users[2:5, 10:15].name.first")
+
+    equal to:
+
+        pluckable(obj).users[2:5, 10:15].name.first.value
+
+    """
+    if not selector:
+        return obj
+    if selector[0] != '[':
+        selector = '.%s' % selector
+    wrapped_obj = pluckable(obj, default=default, skipmissing=skipmissing)
+    return eval("wrapped_obj%s.value" % selector)
+
+
 def merge(a, b, op=None, recurse_list=False):
     """Immutable merge ``a`` structure with ``b`` using binary operator ``op``
     on leaf nodes. Merged structure is returned, input lists are not modified.
