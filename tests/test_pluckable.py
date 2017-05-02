@@ -177,6 +177,9 @@ class TestPluckable(unittest.TestCase):
     def test_dict_slice_reduced_to_scalar_result(self):
         self.assertEqual(pluckable({0: 0, 1: 1, 4: 4})[1::2].value, 1)
 
+    def test_dict_extract_only_numerical_keys(self):
+        self.assertEqual(sorted(pluckable({0: 0, 'a': 'a', 1: 1, 'b': 'b', 3: 3, 4: 4})[:].value), [0, 1, 3, 4])
+
     def test_inplace(self):
         p = pluckable(self.src, inplace=True)
         p2 = p.c.I.b
