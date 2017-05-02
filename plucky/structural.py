@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 import sys
 
-from .compat import xrange, baseinteger
+from .compat import xrange, baseinteger, basestring
 
 
 class pluckable(object):
@@ -137,14 +137,24 @@ class pluckable(object):
                 res.extend(self._extract_from_list(selector))
             else:
                 res.extend(self._extract_from_dict(selector))
-        
-        singular_selector = \
-            not isinstance(self.obj, list) or \
-            len(selectors) == 1 and isinstance(selectors[0], baseinteger)
-        
+
+        # Should we collapse the result list to a singular result?
+        # We should, if we filter by only one simple selector (index or key),
+        # except when we filter a list with the key selector.
+        # (cases: anything[idx], dict["key"])
+        #
+        # We are doing this here, and not in selector extractors above, to make
+        # combining results from multiple selectors easier.
+        singular_result = False
+        if len(selectors) == 1:
+            is_idx = isinstance(selectors[0], baseinteger)
+            is_key = isinstance(selectors[0], basestring)
+            not_list = not isinstance(self.obj, list)
+            singular_result = is_idx or is_key and not_list
+
         if len(res) == 0:
             return self.rewrap(empty=True)
-        elif len(res) == 1 and singular_selector:
+        elif len(res) == 1 and singular_result:
             return self.rewrap(obj=res[0])
         else:
             return self.rewrap(obj=res)

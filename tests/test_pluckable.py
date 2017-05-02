@@ -23,7 +23,8 @@ class TestPluckable(unittest.TestCase):
                     "y": "y1"
                 }, {
                     "x": "x2",
-                    "y": "y2"
+                    "y": "y2",
+                    "z": "z2"
                 }]
             },
             "users": [{
@@ -120,6 +121,9 @@ class TestPluckable(unittest.TestCase):
     def test_getitem_str_str_from_list_dict_deep(self):
         self.assertEqual(self.obj.c.II["x", "y"].value, ["x1", "x2", "y1", "y2"])
 
+    def test_getitem_str_from_list_dict_single(self):
+        self.assertEqual(self.obj.c.II["z"].value, ["z2"])
+
     def test_getitem_str_int_from_dict_deep(self):
         self.assertEqual(self.obj["a", 1].value, [1, "one"])
 
@@ -154,9 +158,9 @@ class TestPluckable(unittest.TestCase):
         self.assertEqual(pluckable({0: 0})[0].value, 0)
 
     def test_dict_slice_singular(self):
-        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:2].value, 1)
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:2].value, [1])
 
-    def test_dict_slice(self):
+    def test_dict_slice_range(self):
         self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:3].value, [1, 2])
 
     def test_dict_slice_unbound_top(self):
@@ -174,8 +178,8 @@ class TestPluckable(unittest.TestCase):
     def test_dict_slice_step_from_one(self):
         self.assertEqual(pluckable({0: 0, 1: 1, 3: 3, 4: 4})[1::2].value, [1, 3])
 
-    def test_dict_slice_reduced_to_scalar_result(self):
-        self.assertEqual(pluckable({0: 0, 1: 1, 4: 4})[1::2].value, 1)
+    def test_dict_slice_reduced_to_single_result(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 4: 4})[1::2].value, [1])
 
     def test_dict_extract_only_numerical_keys(self):
         self.assertEqual(sorted(pluckable({0: 0, 'a': 'a', 1: 1, 'b': 'b', 3: 3, 4: 4})[:].value), [0, 1, 3, 4])
