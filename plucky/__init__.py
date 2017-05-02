@@ -11,10 +11,10 @@ from itertools import chain
 from .compat import basestring
 from .structural import pluckable
 
-__all__ = ["pluck", "merge", "pluckable", "pluck2"]
+__all__ = ["pluck", "plucks", "pluckable", "merge"]
 
 
-def pluck(obj, selector, default=None):
+def plucks(obj, selector, default=None):
     """Safe itemgetter for structured objects.
     Happily operates on all (nested) objects that implement the item getter, 
     i.e. the `[]` operator.
@@ -45,13 +45,13 @@ def pluck(obj, selector, default=None):
             }]
         }
 
-        pluck(obj, 'users.1.name')
+        plucks(obj, 'users.1.name')
             -> {'last': 'Bono'}
 
-        pluck(obj, 'users.*.name.last')
+        plucks(obj, 'users.*.name.last')
             -> ['Smith', 'Bono']
 
-        pluck(obj, 'users.name.first')
+        plucks(obj, 'users.name.first')
             -> ['John']
 
 
@@ -118,15 +118,15 @@ def pluck(obj, selector, default=None):
         return obj
 
 
-def pluck2(obj, selector, default=None, skipmissing=True):
-    """Alternative implementation of `pluck` that accepts more complex
+def pluck(obj, selector, default=None, skipmissing=True):
+    """Alternative implementation of `plucks` that accepts more complex
     selectors. It's a wrapper around `pluckable`, so a `selector` can be any
     valid Python expression comprising attribute getters (``.attr``) and item
     getters (``[1, 4:8, "key"]``).
 
     Example:
 
-        pluck2(obj, "users[2:5, 10:15].name.first")
+        pluck(obj, "users[2:5, 10:15].name.first")
 
     equal to:
 
