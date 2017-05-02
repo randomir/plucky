@@ -16,18 +16,18 @@ from .compat import xrange, baseinteger
 
 class pluckable(object):
     def __init__(self, obj=None, default=None, skipmissing=True, _empty=False):
-        """Creates a new pluckable object based on `obj`. Default value for
-        the missing keys is given with `default`.
+        """Creates a new pluckable object based on `obj`. Default value for the
+        missing keys is given with `default`.
 
         A two modes of plucking are supported::
 
         (1) the default, document databases alike, where missing keys (and it's
-            ancestors) will be silently dropped-out -- except for the leaf nodes --
-            which always default to the ``default`` when missing.
+            ancestors) will be silently dropped-out -- except for the leaf
+            nodes -- which always default to the ``default`` when missing.
 
-        (2) one-on-one extractor, which will include all missing values as
-        ``default``, ensuring the leaf values exist even when one (or more)
-        intermediate nodes are missing.
+        (2) one-on-one extractor (explict mode), which will include all missing
+        values as ``default``, ensuring the leaf values exist even when one (or
+        more) intermediate nodes are missing.
         """
         self.obj = obj
         self.default = default
@@ -43,8 +43,8 @@ class pluckable(object):
     
     def _filtered_list(self, selector):
         """Iterate over `self.obj` list, extracting `selector` from each
-        element. The `selector` can be a simple integer index, slice object,
-        or any valid dict key (hashable object).
+        element. The `selector` can be a simple integer index, or any valid dict
+        key (hashable object).
         """
         res = []
         for elem in self.obj:
@@ -55,19 +55,33 @@ class pluckable(object):
                     res.append(self.default)
         return res
 
+    def _sliced_list(self, selector):
+        """For slice selectors operating on lists, we need to handle them
+        differently, depending on ``skipmissing``. In explicit mode, we may have
+        to expand the list with ``default`` values.
+        """
+        if self.skipmissing:
+            return self.obj[selector]
+
+        # TODO: can be optimized by observing list bounds
+        keys = xrange(selector.start or 0,
+                      selector.stop or sys.maxint,
+                      selector.step or 1)
+        res = []
+        for key in keys:
+            try:
+                res.append(self.obj[key])
+            except:
+                res.append(self.default)
+        return res
+
     def _extract_from_list(self, selector):
-        try:
-            if isinstance(selector, baseinteger):
-                return [self.obj[selector]]
-            elif isinstance(selector, slice):
-                return self.obj[selector]
-            else:
-                return self._filtered_list(selector)
-        except:
-            if self.skipmissing:
-                return []
-            else:
-                return [self.default]
+        if isinstance(selector, baseinteger):
+            return self._sliced_list(slice(selector, selector+1))
+        elif isinstance(selector, slice):
+            return self._sliced_list(selector)
+        else:
+            return self._filtered_list(selector)
     
     def _extract_from_dict(self, selector):
         """Extracts all values from `self.obj` dict addressed with a `selector`.

@@ -117,7 +117,7 @@ class TestPluckable(unittest.TestCase):
     def test_getitem_str2_from_list_dict_deep_rev(self):
         self.assertEqual(self.obj.c.II["x"][::-1].value, ["x2", "x1"])
 
-    def test_getitem_str2_from_list_dict_deep(self):
+    def test_getitem_str_str_from_list_dict_deep(self):
         self.assertEqual(self.obj.c.II["x", "y"].value, ["x1", "x2", "y1", "y2"])
 
     def test_getitem_str_int_from_dict_deep(self):
@@ -127,7 +127,7 @@ class TestPluckable(unittest.TestCase):
         self.assertEqual(pluckable([1, 2], skipmissing=False)[0, 2].value, [1, None])
 
     def test_skipmissing_list_slice(self):
-        self.assertEqual(pluckable([1, 2], skipmissing=False)[0:5].value, [1, 2])
+        self.assertEqual(pluckable([1, 2], skipmissing=False)[0:4].value, [1, 2, None, None])
 
     def test_skipmissing_dict_keys(self):
         D = {"x": 1}
@@ -136,6 +136,10 @@ class TestPluckable(unittest.TestCase):
     def test_skipmissing_dict_keys2(self):
         D = {"x": 1}
         self.assertEqual(pluckable(D, skipmissing=False)["x", "y"].invalid.value, [None, None])
+
+    def test_skipmissing_dict_slice(self):
+        D = {"x": 1}
+        self.assertEqual(pluckable(D, skipmissing=False)[0:5].invalid.value, [None] * 5)
 
     def test_skipmissing_dict_deep(self):
         self.assertEqual(self.obj2.c.I["a", "x", "b"].value, [1, None, 2])
