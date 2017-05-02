@@ -115,7 +115,9 @@ class pluckable(object):
             start = selector.start or 0
             step = selector.step or 1
             if selector.stop is None:
-                keys = [k for k in self.obj.keys() if isinstance(k, baseinteger) and k >= start and (k - start) % step == 0]
+                keys = \
+                    [k for k in self.obj.keys() if isinstance(k, baseinteger) \
+                        and k >= start and (k - start) % step == 0]
             else:
                 keys = xrange(start, selector.stop, step)
         else:

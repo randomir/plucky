@@ -93,7 +93,7 @@ Examples
     pluckable(obj).users.name.first.value
     # -> ['John']
 
-    pluckable(obj).users.uid.value[0, 2, 1]
+    pluckable(obj).users.uid[0, 2, 1].value
     # -> [1234, 3456, 2345]
 
     pluckable(obj, skipmissing=False, default='Unnamed').users.name.first.value
