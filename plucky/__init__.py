@@ -137,7 +137,7 @@ def pluck2(obj, selector, default=None, skipmissing=True):
         return obj
     if selector[0] != '[':
         selector = '.%s' % selector
-    wrapped_obj = pluckable(obj, default=default, skipmissing=skipmissing)
+    wrapped_obj = pluckable(obj, default=default, skipmissing=skipmissing, inplace=True)
     return eval("wrapped_obj%s.value" % selector)
 
 
