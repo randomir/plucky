@@ -96,9 +96,13 @@ class pluckable(object):
         failing-back, again, to an empty list.
         """
         if isinstance(selector, slice):
-            keys = xrange(selector.start or 0,
-                          selector.stop or sys.maxint,
-                          selector.step or 1)
+            # never fallback to maxint, it case `4::2` filter all even numerical keys >=4
+            start = selector.start or 0
+            step = selector.step or 1
+            if selector.stop is None:
+                keys = [k for k in self.obj.keys() if k >= start and (k - start) % step == 0]
+            else:
+                keys = xrange(start, selector.stop, step)
         else:
             keys = [selector]
         
