@@ -24,7 +24,10 @@ indices. Slices over list items are also supported.
 ``plucky.pluckable`` will happily wrap dictionary- or list-like objects and allow
 for chained soft plucking with attribute and item getters (e.g. ``.attr``,
 ``["key"]``, ``[idx]``, ``[a:b]``, or a combination: ``["key1", "key2"]``,
-and ``[0, 3:7, ::-1]``)
+and ``[0, 3:7, ::-1]``; even: ``["length", 0:5]``).
+
+``plucky.pluck2`` is a next generation of ``pluck``: it unwraps ``pluckable``
+(Python) syntax from a supplied string selector.
 
 ``plucky.merge`` facilitates recursive merging of two data structures, reducing
 leaf values with the provided binary operator.
@@ -45,11 +48,13 @@ Usage
 
     from plucky import pluck, merge, pluckable
 
-    pluck(obj, 'selector.*.path.2')
+    pluck(obj, 'selector.path.2')
 
     merge({"x": 1, "y": 0}, {"x": 2})
     
-    pluckable(obj).users[2:5, 10:15].name["first", "middle"]
+    pluckable(obj).users[2:5, 10:15].name["first", "middle"].value
+
+    pluck2(obj, 'users[2:5, 10:15].name["first", "middle"]')
 
 
 Examples
@@ -77,7 +82,7 @@ Examples
     pluck(obj, 'users.1.name')
     # -> {'last': 'Bono'}
 
-    pluck(obj, 'users.*.name.last')
+    pluck(obj, 'users.name.last')
     # -> ['Smith', 'Bono']
 
     pluck(obj, 'users.*.name.first')
@@ -113,7 +118,7 @@ More Examples! :)
     pluck([1,2,3], '::-1')
     # -> [3,2,1]
 
-    pluck([1, {'val': 2}, 3], '*.val')
+    pluck([1, {'val': 2}, 3], 'val')
     # -> [2]
 
     pluck([1, {'val': [1,2,3]}, 3], '1.val.-1')
@@ -132,4 +137,7 @@ More Examples! :)
     # -> ['Smith', 'Bono', 'Bono', 'Smith']
     
     pluckable(obj).users[:, ::-1].name.last[0, -1].value
+    # -> ['Smith', 'Smith']
+
+    pluck2(obj, 'users[:, ::-1].name.last[0, -1]')
     # -> ['Smith', 'Smith']

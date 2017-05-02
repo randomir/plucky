@@ -11,7 +11,7 @@ from itertools import chain
 from .compat import basestring
 from .structural import pluckable
 
-__all__ = ["pluck", "merge", "pluckable"]
+__all__ = ["pluck", "merge", "pluckable", "pluck2"]
 
 
 def pluck(obj, selector, default=None):
