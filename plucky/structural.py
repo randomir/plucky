@@ -15,7 +15,8 @@ from .compat import xrange, baseinteger
 
 
 class pluckable(object):
-    def __init__(self, obj=None, default=None, skipmissing=True, _empty=False):
+    def __init__(self, obj=None, default=None, skipmissing=True,
+                 inplace=False, empty=False):
         """Creates a new pluckable object based on `obj`. Default value for the
         missing keys is given with `default`.
 
@@ -32,11 +33,25 @@ class pluckable(object):
         self.obj = obj
         self.default = default
         self.skipmissing = skipmissing
-        self._empty = _empty
-    
+        self.inplace = inplace
+        self.empty = empty
+
+    def rewrap(self, **kwargs):
+        """Inplace constructor. Depending on `self.inplace`, rewrap `obj`, or
+        just update internal vars, possibly including the `obj`.
+        """
+        if self.inplace:
+            for key, val in kwargs.items():
+                setattr(self, key, val)
+            return self
+        else:
+            for key in ['obj', 'default', 'skipmissing', 'inplace', 'empty']:
+                kwargs.setdefault(key, getattr(self, key))
+            return pluckable(**kwargs)
+
     @property
     def value(self):
-        if self._empty:
+        if self.empty:
             return self.default
         else:
             return self.obj
@@ -128,14 +143,11 @@ class pluckable(object):
             len(selectors) == 1 and isinstance(selectors[0], baseinteger)
         
         if len(res) == 0:
-            return pluckable(_empty=True, default=self.default,
-                             skipmissing=self.skipmissing)
+            return self.rewrap(empty=True)
         elif len(res) == 1 and singular_selector:
-            return pluckable(res[0], self.default,
-                             skipmissing=self.skipmissing)
+            return self.rewrap(obj=res[0])
         else:
-            return pluckable(res, self.default,
-                             skipmissing=self.skipmissing)
+            return self.rewrap(obj=res)
     
     def __getattr__(self, name):
         """Handle ``obj.name`` lookups.
