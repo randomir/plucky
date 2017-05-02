@@ -150,6 +150,32 @@ class TestPluckable(unittest.TestCase):
     def test_skipmissing_dict_deep3(self):
         self.assertEqual(self.obj2.users.name.last.missing.value, [None, None, None])
 
+    def test_dict_numeric_key(self):
+        self.assertEqual(pluckable({0: 0})[0].value, 0)
+
+    def test_dict_slice_singular(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:2].value, 1)
+
+    def test_dict_slice(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:3].value, [1, 2])
+
+    def test_dict_slice_unbound_top(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[1:].value, [1, 2])
+
+    def test_dict_slice_unbound_bottom(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[:2].value, [0, 1])
+
+    def test_dict_slice_unbound(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 2: 2})[:].value, [0, 1, 2])
+
+    def test_dict_slice_step_from_zero(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 3: 3, 4: 4})[::2].value, [0, 4])
+
+    def test_dict_slice_step_from_one(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 3: 3, 4: 4})[1::2].value, [1, 3])
+
+    def test_dict_slice_reduced_to_scalar_result(self):
+        self.assertEqual(pluckable({0: 0, 1: 1, 4: 4})[1::2].value, 1)
 
 if __name__ == '__main__':
     unittest.main()
