@@ -177,5 +177,11 @@ class TestPluckable(unittest.TestCase):
     def test_dict_slice_reduced_to_scalar_result(self):
         self.assertEqual(pluckable({0: 0, 1: 1, 4: 4})[1::2].value, 1)
 
+    def test_inplace(self):
+        p = pluckable(self.src, inplace=True)
+        p2 = p.c.I.b
+        self.assertEqual(id(p), id(p2))
+        self.assertEqual(p2.obj, 2)
+
 if __name__ == '__main__':
     unittest.main()
