@@ -22,3 +22,9 @@ try:
     xrange = xrange
 except:
     xrange = range
+
+# safe unicode classname
+try:
+	unicode = unicode
+except:
+	unicode = str

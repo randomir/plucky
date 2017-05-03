@@ -1,17 +1,30 @@
 """
-pluckable - a dict/list lazy wrapper that supports chained soft get/slice,
-like::
+pluckable - object lazy wrapper that supports chained soft get/slice of
+items and/or attributes like::
 
     pluckable(obj).users[2:5, 10:15].name.first
 
     pluckable(obj)[::-1].meta["is-admin"][0]
 
+    pluckable({"v": namedtuple("Vector", "x y z")(1, 2, 3)}).v.x
+
 """
+
+# TODO?
+# pluckable([{'a': {2: 1}}]).a.2 --> 1
+
 from __future__ import absolute_import
 
 import sys
 
-from .compat import xrange, baseinteger, basestring
+from .compat import xrange, baseinteger, basestring, unicode
+
+
+class AttrSelector(unicode):
+    """String key with preferrence for attribute plucking (`getattr`)."""
+
+class KeySelector(unicode):
+    """String key with preferrence for item plucking (`__getitem__`)."""
 
 
 class pluckable(object):
@@ -55,19 +68,42 @@ class pluckable(object):
             return self.default
         else:
             return self.obj
-    
+
+    def _append(self, obj, key, res, skipmissing=None):
+        if skipmissing is None:
+            skipmissing = self.skipmissing
+
+        # prefer attributes over items
+        if isinstance(key, AttrSelector):
+            try:
+                res.append(getattr(obj, key))
+            except:  #  AttributeError et al
+                try:
+                    res.append(obj[key])
+                except:  # KeyError et al
+                    if not skipmissing:
+                        res.append(self.default)
+            return res
+
+        # by default, prefer itemgetter over attrgetter (key ~ KeySelector)
+        try:
+            res.append(obj[key])
+        except:  # KeyError et al
+            try:
+                res.append(getattr(obj, key))
+            except:  #  AttributeError et al
+                if not skipmissing:
+                    res.append(self.default)
+        return res
+
     def _filtered_list(self, selector):
         """Iterate over `self.obj` list, extracting `selector` from each
-        element. The `selector` can be a simple integer index, or any valid dict
+        element. The `selector` can be a simple integer index, or any valid
         key (hashable object).
         """
         res = []
         for elem in self.obj:
-            try:
-                res.append(elem[selector])
-            except:
-                if not self.skipmissing:
-                    res.append(self.default)
+            self._append(elem, selector, res)
         return res
 
     def _sliced_list(self, selector):
@@ -84,10 +120,7 @@ class pluckable(object):
                       selector.step or 1)
         res = []
         for key in keys:
-            try:
-                res.append(self.obj[key])
-            except:
-                res.append(self.default)
+            self._append(self.obj, key, res, skipmissing=False)
         return res
 
     def _extract_from_list(self, selector):
@@ -98,10 +131,14 @@ class pluckable(object):
         else:
             return self._filtered_list(selector)
     
-    def _extract_from_dict(self, selector):
-        """Extracts all values from `self.obj` dict addressed with a `selector`.
+    def _extract_from_object(self, selector):
+        """Extracts all values from `self.obj` object addressed with a `selector`.
         Selector can be a ``slice``, or a singular value extractor in form of a
         valid dictionary key (hashable object).
+        
+        Object (operated on) can be anything with an itemgetter or attrgetter,
+        including, but limited to `dict`, and `list`.
+        Itemgetter is preferred over attrgetter, except when called as `.key`.
         
         If `selector` is a singular value extractor (like a string, integer,
         etc), a single value (for a given key) is returned if key exists, an
@@ -125,11 +162,7 @@ class pluckable(object):
         
         res = []
         for key in keys:
-            try:
-                res.append(self.obj[key])
-            except:
-                if not self.skipmissing:
-                    res.append(self.default)
+            self._append(self.obj, key, res)
         return res
     
     def _get_all(self, *selectors):
@@ -138,12 +171,12 @@ class pluckable(object):
             if isinstance(self.obj, list):
                 res.extend(self._extract_from_list(selector))
             else:
-                res.extend(self._extract_from_dict(selector))
+                res.extend(self._extract_from_object(selector))
 
         # Should we collapse the result list to a singular result?
         # We should, if we filter by only one simple selector (index or key),
         # except when we filter a list with the key selector.
-        # (cases: anything[idx], dict["key"])
+        # (cases: anything[idx], dict["key"]/obj.attr)
         #
         # We are doing this here, and not in selector extractors above, to make
         # combining results from multiple selectors easier.
@@ -169,7 +202,7 @@ class pluckable(object):
                        iterate over all elements, extracting "key" from each
                        element
         """
-        return self._get_all(name)
+        return self._get_all(AttrSelector(name))
     
     def __getitem__(self, key):
         """Handle various ``obj[key]`` lookups, including::
