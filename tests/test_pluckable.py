@@ -5,6 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 import unittest
+from collections import namedtuple
 from plucky import pluckable
 
 
@@ -189,6 +190,51 @@ class TestPluckable(unittest.TestCase):
         p2 = p.c.I.b
         self.assertEqual(id(p), id(p2))
         self.assertEqual(p2.obj, 2)
+
+    def test_attrgetter_custom_attr_old_style_class(self):
+        class Obj:
+            x = 1
+        self.assertEqual(pluckable(Obj).x.value, 1)
+
+    def test_attrgetter_custom_attr_old_style_class_object(self):
+        class Obj:
+            x = 1
+        self.assertEqual(pluckable(Obj()).x.value, 1)
+
+    def test_attrgetter_custom_attr_class(self):
+        class Obj(object):
+            x = 1
+        self.assertEqual(pluckable(Obj).x.value, 1)
+
+    def test_attrgetter_custom_attr_class_object(self):
+        class Obj(object):
+            x = 1
+        self.assertEqual(pluckable(Obj()).x.value, 1)
+
+    def test_attrgetter_custom_attr_shadowed(self):
+        class Dct(dict):
+            x = 1
+        d = Dct(x=2)
+        self.assertEqual(pluckable(d).x.value, 1)
+        self.assertEqual(pluckable(d)['x'].value, 2)
+
+    def test_attrgetter_custom_attr_shadowed_combination(self):
+        class Dct(dict):
+            x = 1
+            y = 2
+        d = Dct(x=2)
+        self.assertEqual(pluckable(d)['x', 'y'].value, [2, 2])
+
+    def test_attrgetter_custom_attr_shadowed_combination_inv_deep(self):
+        class Dct(dict):
+            x = dict(y=1)
+        d = Dct()
+        self.assertEqual(pluckable(d)['x'].y.value, 1)
+
+    def test_attrgetter_namedtuple(self):
+        Point = namedtuple("Point", "x y z")
+        self.assertEqual(pluckable(Point(3, 2, 1)).x.value, 3)
+
 
 if __name__ == '__main__':
     unittest.main()
