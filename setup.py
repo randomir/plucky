@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='plucky',
-    version='0.4.0',
+    version='0.4.1',
     description='Plucking (deep) keys/paths safely from python collections has never been easier.',
     long_description=open('README.rst').read(),
     author='Radomir Stevanovic',
