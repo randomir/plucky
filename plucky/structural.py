@@ -148,15 +148,27 @@ class pluckable(object):
         failing-back, again, to an empty list.
         """
         if isinstance(selector, slice):
-            # never fallback to maxint, it case `4::2` filter all even numerical keys >=4
+            # we must expand the slice manually, in order to be able to apply to
+            # for example, to mapping types, or general objects
+            # (e.g. slice `4::2` will filter all even numerical keys/attrs >=4)
             start = selector.start or 0
             step = selector.step or 1
             if selector.stop is None:
-                keys = \
-                    [k for k in self.obj.keys() if isinstance(k, baseinteger) \
-                        and k >= start and (k - start) % step == 0]
+                if hasattr(self.obj, "keys"):
+                    # filter keys by slice
+                    keys = \
+                        [k for k in self.obj.keys() if isinstance(k, baseinteger) \
+                            and k >= start and (k - start) % step == 0]
+                elif hasattr(self.obj, "__len__"):
+                    # object we slice should have a length (__len__ method),
+                    keys = xrange(start, len(self.obj), step)
+                else:
+                    # otherwise, we don't know how to slice, so just skip it,
+                    # instead of failing
+                    keys = []
             else:
                 keys = xrange(start, selector.stop, step)
+
         else:
             keys = [selector]
         

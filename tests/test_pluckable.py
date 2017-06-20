@@ -185,6 +185,21 @@ class TestPluckable(unittest.TestCase):
     def test_dict_extract_only_numerical_keys(self):
         self.assertEqual(sorted(pluckable({0: 0, 'a': 'a', 1: 1, 'b': 'b', 3: 3, 4: 4})[:].value), [0, 1, 3, 4])
 
+    def test_str_numeric_key(self):
+        self.assertEqual(pluckable("str")[0].value, 's')
+
+    def test_str_numeric_negative_key(self):
+        self.assertEqual(pluckable("str")[-1].value, 'r')
+
+    def test_str_slice_singular(self):
+        self.assertEqual(pluckable("str")[0:1].value, ['s'])
+
+    def test_str_slice_range(self):
+        self.assertEqual(pluckable("str")[0:2].value, ['s', 't'])
+
+    def test_str_slice_unbound(self):
+        self.assertEqual(pluckable("str")[:].value, ['s', 't', 'r'])
+
     def test_inplace(self):
         p = pluckable(self.src, inplace=True)
         p2 = p.c.I.b
