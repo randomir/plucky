@@ -235,6 +235,9 @@ class TestPluckable(unittest.TestCase):
         Point = namedtuple("Point", "x y z")
         self.assertEqual(pluckable(Point(3, 2, 1)).x.value, 3)
 
+    def test_iter(self):
+        self.assertEqual(list(iter(self.obj.users.name.last)), ['smith', 'bonobo'])
+
 
 if __name__ == '__main__':
     unittest.main()
