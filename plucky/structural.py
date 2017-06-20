@@ -255,4 +255,8 @@ class pluckable(object):
         if self.empty:
             return iter([])
 
-        return iter(self.value)
+        val = self.value
+        try:
+            return iter(val)
+        except Exception as e:
+            return iter([val])

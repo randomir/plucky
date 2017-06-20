@@ -250,11 +250,17 @@ class TestPluckable(unittest.TestCase):
         Point = namedtuple("Point", "x y z")
         self.assertEqual(pluckable(Point(3, 2, 1)).x.value, 3)
 
-    def test_iter(self):
+    def test_iter_list(self):
         self.assertEqual(list(iter(self.obj.users.name.last)), ['smith', 'bonobo'])
 
     def test_iter_empty(self):
         self.assertEqual(list(iter(pluckable('x').y)), [])
+
+    def test_iter_noniterable_singular_value(self):
+        self.assertEqual(list(iter(pluckable({'x':1}).x)), [1])
+
+    def test_iter_dictkeys(self):
+        self.assertEqual(list(iter(pluckable({'x':{'y':2}}).x)), ['y'])
 
 
 if __name__ == '__main__':
