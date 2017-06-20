@@ -231,3 +231,13 @@ class pluckable(object):
 
     def __repr__(self):
         return repr(self.value)
+
+    def __iter__(self):
+        """Iterate over values plucked so far.
+        
+        Example::
+
+            for val in pluckable(obj).users.last:
+                print(val)
+        """
+        return iter(self.value)
