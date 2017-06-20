@@ -253,6 +253,9 @@ class TestPluckable(unittest.TestCase):
     def test_iter(self):
         self.assertEqual(list(iter(self.obj.users.name.last)), ['smith', 'bonobo'])
 
+    def test_iter_empty(self):
+        self.assertEqual(list(iter(pluckable('x').y)), [])
+
 
 if __name__ == '__main__':
     unittest.main()

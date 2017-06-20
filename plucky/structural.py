@@ -252,4 +252,7 @@ class pluckable(object):
             for val in pluckable(obj).users.last:
                 print(val)
         """
+        if self.empty:
+            return iter([])
+
         return iter(self.value)
