@@ -260,3 +260,18 @@ class pluckable(object):
             return iter(val)
         except Exception as e:
             return iter([val])
+
+    def items(self):
+        """Behave like `dict.items` for mapping types (iterator over (key, value)
+        pairs), and like `iter` for sequence types (iterator over values).
+        """
+        if self.empty:
+            return iter([])
+
+        val = self.value
+        if hasattr(val, "iteritems"):
+            return val.iteritems()
+        elif hasattr(val, "items"):
+            return val.items()
+        else:
+            return iter(self)

@@ -257,10 +257,16 @@ class TestPluckable(unittest.TestCase):
         self.assertEqual(list(iter(pluckable('x').y)), [])
 
     def test_iter_noniterable_singular_value(self):
-        self.assertEqual(list(iter(pluckable({'x':1}).x)), [1])
+        self.assertEqual(list(iter(pluckable({'x': 1}).x)), [1])
 
     def test_iter_dictkeys(self):
-        self.assertEqual(list(iter(pluckable({'x':{'y':2}}).x)), ['y'])
+        self.assertEqual(list(iter(pluckable({'x': {'y': 2}}).x)), ['y'])
+
+    def test_items_dict(self):
+        self.assertEqual(list(pluckable({'x': {'y': 2}}).x.items()), [('y', 2)])
+
+    def test_items_list(self):
+        self.assertEqual(list(pluckable(range(10))[0:3].items()), [0, 1, 2])
 
 
 if __name__ == '__main__':
