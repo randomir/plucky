@@ -40,8 +40,8 @@ class pluckable(object):
             nodes -- which always default to the ``default`` when missing.
 
         (2) one-on-one extractor (explict mode), which will include all missing
-        values as ``default``, ensuring the leaf values exist even when one (or
-        more) intermediate nodes are missing.
+            values as ``default``, ensuring the leaf values exist even when one
+            (or more) intermediate nodes are missing.
         """
         self.obj = obj
         self.default = default
@@ -209,10 +209,10 @@ class pluckable(object):
     def __getattr__(self, name):
         """Handle ``obj.name`` lookups.
         
-            obj.key -> the same as obj["key"]: if obj is a dict, extract value
-                       under key "key" (or default val), if obj is a list,
-                       iterate over all elements, extracting "key" from each
-                       element
+            obj.key -> similar to obj["key"], but with preferrence on attributes vs items. 
+                       If obj is a dict, and "key" is not a valid `dict` attribute, extract
+                       dict value under key "key" (or default val). If obj is a list,
+                       iterate over all elements, extracting "key" from each element
         """
         return self._get_all(AttrSelector(name))
     

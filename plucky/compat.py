@@ -25,6 +25,6 @@ except:
 
 # safe unicode classname
 try:
-	unicode = unicode
+    unicode = unicode
 except:
-	unicode = str
+    unicode = str
