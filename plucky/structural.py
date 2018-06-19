@@ -233,10 +233,13 @@ class pluckable(object):
                               from each element into a flat list
             obj["x", "y", 3, ::-1] -> similar to above, extracting "x", "y", 3 and all keys in reverse
         """
-        if isinstance(key, tuple):
-            return self._get_all(*key)
-        else:
-            return self._get_all(key)
+        try:
+            # accept any iterable for indices
+            keys = iter(key)
+        except TypeError:
+            keys = (key,)
+
+        return self._get_all(*keys)
 
     def __str__(self):
         return str(self.value)
