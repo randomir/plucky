@@ -268,6 +268,20 @@ class TestPluckable(unittest.TestCase):
     def test_items_list(self):
         self.assertEqual(list(pluckable(range(10))[0:3].items()), [0, 1, 2])
 
+    def test_iter_getter(self):
+        obj = {"a": 1, "b": 2, "c": 3}
+        pl = pluckable(obj)
+
+        self.assertEqual(pl["a"].value, 1)
+        self.assertEqual(pl["a", "b"].value, [1, 2])
+        self.assertEqual(pl[("a", "b")].value, [1, 2])
+        self.assertEqual(pl[["a", "b"]].value, [1, 2])
+
+        def gen():
+            yield "a"
+            yield "b"
+        self.assertEqual(pl[gen()].value, [1, 2])
+
 
 if __name__ == '__main__':
     unittest.main()
