@@ -141,9 +141,12 @@ def pluck(obj, selector, default=None, skipmissing=True):
     return eval("wrapped_obj%s.value" % selector)
 
 
-def merge(a, b, op=None, recurse_list=False):
+def merge(a, b, op=None, recurse_list=False, max_depth=None):
     """Immutable merge ``a`` structure with ``b`` using binary operator ``op``
-    on leaf nodes. Merged structure is returned, input lists are not modified.
+    on leaf nodes. All nodes at, or below, ``max_depth`` are considered to be
+    leaf nodes.
+
+    Merged structure is returned, input data structures are not modified.
 
     If ``recurse_list=True``, leaf lists of equal length will be merged on a
     list-element level. Lists are considered to be leaf nodes by default
@@ -159,11 +162,19 @@ def merge(a, b, op=None, recurse_list=False):
     if op is None:
         op = operator.add
 
+    if max_depth is not None:
+        if max_depth < 1:
+            return op(a, b)
+        else:
+            max_depth -= 1
+
     if isinstance(a, dict) and isinstance(b, dict):
         result = {}
         for key in set(chain(a.keys(), b.keys())):
             if key in a and key in b:
-                result[key] = merge(a[key], b[key], op, recurse_list)
+                result[key] = merge(a[key], b[key],
+                                    op=op, recurse_list=recurse_list,
+                                    max_depth=max_depth)
             elif key in a:
                 result[key] = deepcopy(a[key])
             elif key in b:
@@ -175,7 +186,9 @@ def merge(a, b, op=None, recurse_list=False):
             # merge subelements
             result = []
             for idx in range(len(a)):
-                result.append(merge(a[idx], b[idx], op, recurse_list))
+                result.append(merge(a[idx], b[idx],
+                                    op=op, recurse_list=recurse_list,
+                                    max_depth=max_depth))
             return result
         else:
             # merge lists
