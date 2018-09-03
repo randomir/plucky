@@ -48,6 +48,22 @@ class TestMerge(unittest.TestCase):
     def test_lists_no_recurse_in_dict(self):
         self.assertEqual(merge({'x': [1]}, {'x': [2]}), {'x': [1, 2]})
 
+    def test_max_depth_lists(self):
+        self.assertEqual(merge(["abc"], ["def"], recurse_list=True, max_depth=1), ["abcdef"])
+        self.assertEqual(merge(["abc"], ["def"], recurse_list=True, max_depth=0), ["abc", "def"])
+
+    def test_max_depth_dicts(self):
+        a = {'a': {'b': [1,2,3], 'c': 'c'}, 'd': 'd'}
+        b = {'a': {'b': [4]}}
+        self.assertEqual(merge(a, b, max_depth=None),
+                         {'a': {'b': [1,2,3,4], 'c': 'c'}, 'd': 'd'})
+        self.assertEqual(merge(a, b, max_depth=2),
+                         {'a': {'b': [1,2,3,4], 'c': 'c'}, 'd': 'd'})
+        self.assertEqual(merge(a, b, max_depth=1, op=lambda a,b: b),
+                         {'a': {'b': [4]}, 'd': 'd'})
+        self.assertEqual(merge(a, b, max_depth=0, op=lambda a,b: b),
+                         b)
+
 
 if __name__ == '__main__':
     unittest.main()
