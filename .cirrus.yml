@@ -1,3 +1,5 @@
+# python docker containers used: https://hub.docker.com/_/python/
+
 test_task:
   container:
     matrix:
@@ -6,4 +8,11 @@ test_task:
       image: python:3.5
       image: python:3.4
       image: python:2.7
+
+  windows_container:
+    matrix:
+      image: python:3.7-windowsservercore
+      image: python:3.6-windowsservercore
+      image: python:2.7-windowsservercore
+
   test_script: make test
